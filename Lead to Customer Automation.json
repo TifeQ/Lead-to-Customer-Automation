@@ -1,0 +1,1587 @@
+{
+  "name": "Lead to Customer Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formId": "D7jDIvs5"
+      },
+      "type": "n8n-nodes-base.typeformTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -496
+      ],
+      "id": "0f2b63d9-dd5f-4516-a7a5-158aa61fca5b",
+      "name": "Typeform Trigger",
+      "webhookId": "fa2f34e0-5c9b-488b-9dd4-5c6091ce8f8d",
+      "credentials": {
+        "typeformApi": {
+          "id": "UZszMzC6bFwTRa11",
+          "name": "Typeform account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://www.disify.com/api/email/{{ $json['What is your business email address?'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        -496
+      ],
+      "id": "e30e98fa-6604-466a-b725-6da4c4a3f0e4",
+      "name": "Validate Email"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "875e7917-a390-432c-9932-a797ba08742d",
+              "name": "status",
+              "value": "Needs Review - Invalid Email",
+              "type": "string"
+            },
+            {
+              "id": "17f9164d-b8c8-4212-8e46-ba40fd4935e2",
+              "name": "Email",
+              "value": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        -400
+      ],
+      "id": "4ab9941e-a54d-420a-9aca-552d37bd1988",
+      "name": "Mark as Invalid"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3252401f-278f-41f0-8541-c585db7cc799",
+              "leftValue": "={{ $json.format }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "a29a5ae7-807a-48ff-aeb0-79a22a4d0e99",
+              "leftValue": "={{ $json.dns }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cf3deb70-d5c7-443a-9cc9-7bc848048719",
+              "leftValue": "={{ $json.disposable }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        -496
+      ],
+      "id": "883316c8-95d6-42e3-abba-93b283672cfc",
+      "name": "Email Valid?"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        -592
+      ],
+      "id": "a1c329be-714f-461e-9d6c-b3e86d97a7ba",
+      "name": "Check Duplicate",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fa6c778d-0adf-4da0-950b-9f6fcb50e6b8",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        -592
+      ],
+      "id": "577cf0a5-7aeb-4dd1-9fbe-07dd4fac9719",
+      "name": "Is Duplicate"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "email": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}",
+        "additionalFields": {
+          "companyName": "={{ $('Typeform Trigger').item.json['What is your company’s name?'] }}",
+          "firstName": "={{ $('Typeform Trigger').item.json['Please provide your full name.'] }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        -592
+      ],
+      "id": "24c2f1ac-7312-422f-aae1-4875f1b98535",
+      "name": "Save to Hubspot",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "sa9lzCTCUTQzvYC8",
+          "name": "HubSpot OAuth2 API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "1-10 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "efb69512-5ff4-408b-b1b8-b37d7c3de37c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Junior Rep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "eed7d449-3836-44c7-8fb6-34badb1cfbc9",
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "11-50 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Junior Rep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f54aeadc-891e-43f0-b4e7-18aed74cd6ab",
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "51-200 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Senior Rep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f2e4b0d3-d36a-49b5-9353-a91e33ca5cda",
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "201-500 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Senior Rep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "de4d09ba-7d6b-4fcd-af64-354c946443eb",
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "501-1000 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Senior Rep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a9bcf0c5-b01f-403a-8154-2ec72be01612",
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "1001-5000 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Senior Rep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "42b917de-5305-40dd-9e5b-9a499e8cffe6",
+                    "leftValue": "={{ $('Typeform Trigger').item.json['What is the size of your company?'] }}",
+                    "rightValue": "More than 5000 employees",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Senior Rep"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        -832
+      ],
+      "id": "00d918a5-ee52-4b3d-a77b-1d9676760b41",
+      "name": "Route by Company Size"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "db35deb3-66c3-4377-8e21-e5a036354609",
+              "name": "asigned_rep",
+              "value": "Junior Sales Rep",
+              "type": "string"
+            },
+            {
+              "id": "3e6f33ba-f393-45f4-8400-4a7ce5497acc",
+              "name": "rep_email",
+              "value": "junior.rep@blazeanalytics.com",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        -832
+      ],
+      "id": "737e5279-42c3-4a17-9dec-fa03aa55f483",
+      "name": "Assign Junior Rep"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b604d61-88dc-4909-a645-627fb1c5b72e",
+              "name": "assigned_rep",
+              "value": "Senior Sales Manager",
+              "type": "string"
+            },
+            {
+              "id": "b38cac3c-5dbe-4a45-9baa-d46d0c57d89d",
+              "name": "rep_email",
+              "value": "senior.rep@blazeanalytics.com",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        -640
+      ],
+      "id": "2ee0f0d8-c14f-471f-bcea-e6ad9e00ae0f",
+      "name": "Assign Senior Rep",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fbb479b8-eefd-4f77-ab90-53985597a8c6",
+              "leftValue": "={{ $('Typeform Trigger').item.json['Would you like to request a product demo?'] }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        -736
+      ],
+      "id": "9c250536-376d-4970-a04c-dbd8129a1d3b",
+      "name": "Demo Requested?"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}",
+        "subject": "Welcome! Here's What Happens Next",
+        "emailType": "text",
+        "message": "=Hi {{ $('Typeform Trigger').item.json['Please provide your full name.'] }},  Thank you for reaching out to BlazeAnalytics!  One of our team members will be in touch with you shortly.  BlazeAnalytics Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        -592
+      ],
+      "id": "68a28c67-8963-4416-912b-59f2925fb774",
+      "name": "Send Welcome Email",
+      "webhookId": "7d81c59d-5f7c-456b-a39f-2144a8352658",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IwTkbyxXKlvpkXIf",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}",
+        "subject": "Your Demo Request - Let's Get You Scheduled!",
+        "message": "=Hi {{ $('Typeform Trigger').item.json['Please provide your full name.'] }},  Thank you for your interest! We're excited to show you what we can do.  Click the link below to book your demo at a time that works for you: 👉 https://calendly.com/blazeanalytics/demo  Looking forward to speaking with you!  BlazeAnalytics Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        -832
+      ],
+      "id": "def7b31b-46be-4e8a-b239-6ac795b3ec8f",
+      "name": "Send Demo Email",
+      "webhookId": "a81a4264-38c7-40d3-be51-2374f1bea6fc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IwTkbyxXKlvpkXIf",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "listId": "69f9f720afeee8e3aec7abf6",
+        "name": "=New Lead: {{ $('Typeform Trigger').item.json['Please provide your full name.'] }}",
+        "description": "=Company Size: {{ $('Typeform Trigger').item.json['What is the size of your company?'] }}\nEmail: {{ $('Typeform Trigger').item.json['What is your business email address?'] }}\nCompany: {{ $('Typeform Trigger').item.json['What is your company’s name?'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        2688,
+        -928
+      ],
+      "id": "ca298bd1-4f9a-445d-9ba4-77392c976cc8",
+      "name": "Create Trello Task",
+      "credentials": {
+        "trelloApi": {
+          "id": "9F8f3m9tLAmBs67w",
+          "name": "Trello account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0ARF65AC9G",
+          "mode": "list",
+          "cachedResultName": "general"
+        },
+        "text": "=🚀 New Lead Received! Name: {{ $('Typeform Trigger').item.json['Please provide your full name.'] }} \nEmail: {{ $('Typeform Trigger').item.json['What is your business email address?'] }} \nCompany:{{ $('Typeform Trigger').item.json['What is your company’s name?'] }}  \nCompany Size: {{ $('Typeform Trigger').item.json['What is the size of your company?'] }} \nAssigned Rep: {{ $json.assigned_rep }}\nTrello Card: {{ $json.url }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        3136,
+        -1024
+      ],
+      "id": "3df64e7b-98cb-46fc-af6a-863f12b76063",
+      "name": "Slack Lead Alert",
+      "webhookId": "6a87581a-5c09-4a1e-9bbd-05b421ac18de",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "V8WsnwUYhMJXUXLS",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now }}",
+            "Name": "={{ $('Typeform Trigger').item.json['What is your company’s name?'] }}",
+            "Email": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}",
+            "Company ": "={{ $('Typeform Trigger').item.json['What is your company’s name?'] }}",
+            "Status": "New Lead"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company ",
+              "displayName": "Company ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Enrichment",
+              "displayName": "Enrichment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Route",
+              "displayName": "Route",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Outcome",
+              "displayName": "Outcome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2240,
+        -928
+      ],
+      "id": "109673a5-a61a-4356-93f3-f015e1ab4325",
+      "name": "Log to Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Just checking in — still interested?",
+        "message": "=Hi {{ $('Typeform Trigger').item.json['Please provide your full name.'] }},  We noticed we haven't connected yet. We'd love to help!  Reply to this email or book a call here: 👉 https://calendly.com/blazeanalytics/demo  BlazeAnalytics Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        4032,
+        -1024
+      ],
+      "id": "94aee4fc-52fd-4671-a1b9-6f1fc473eb17",
+      "name": "Send Follow-up Email",
+      "webhookId": "a5504142-3069-4996-a81c-1e62add852bb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IwTkbyxXKlvpkXIf",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        -1024
+      ],
+      "id": "119f6fac-5910-46cf-9037-f96b1a59647e",
+      "name": "Wait 3 days",
+      "webhookId": "fc22fb01-b88c-4e31-8780-67691f42e8b8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3584,
+        -1024
+      ],
+      "id": "649d15a5-baf7-4881-b7b1-e866d2c33abd",
+      "name": "Check Lead Status",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d7f48ed6-bdd0-46ad-8b51-02d0a2ea64d6",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Responded",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3808,
+        -1024
+      ],
+      "id": "c09f3dcf-459f-4829-aa65-749a04668588",
+      "name": "Still Unattended?"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -176
+      ],
+      "id": "4a66fe11-d825-4694-96b0-9f067d8c0141",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -176
+      ],
+      "id": "fb2cf4b6-6e91-4f70-b5e2-0b366e6c4117",
+      "name": "Get Today's Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\nconst total = rows.length;\nconst newLeads = rows.filter(r => r.json.Status === 'New Lead').length;\nconst contacted = rows.filter(r => r.json.Status === 'Contacted').length;\nconst errors = rows.filter(r => r.json.Error !== '').length;\n\nreturn [{\n  json: {\n    total,\n    newLeads,\n    contacted,\n    errors\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -176
+      ],
+      "id": "8544965c-af02-4e73-b676-83912e5d363f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0ARF65AC9G",
+          "mode": "list",
+          "cachedResultName": "general"
+        },
+        "text": "=📊 Daily Lead Digest — {{ $now.toFormat('dd/MM/yyyy') }}  \nTotal Leads: {{ $json.total }} \nNew (Unattended): {{ $json.newLeads }} \nContacted: {{ $json.contacted }} \nErrors: {{ $json.errors }}  \nHave a productive day! 🚀",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        672,
+        -176
+      ],
+      "id": "356063d4-6b73-4314-b612-e0136a280aea",
+      "name": "Send a message",
+      "webhookId": "5e037cde-7997-4803-8958-4969f0da585d",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "V8WsnwUYhMJXUXLS",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Contacted",
+            "Email": "={{ $('Typeform Trigger').item.json['What is your business email address?'] }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company ",
+              "displayName": "Company ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Enrichment",
+              "displayName": "Enrichment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Route",
+              "displayName": "Route",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Outcome",
+              "displayName": "Outcome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2464,
+        -928
+      ],
+      "id": "17470364-c3d0-4de7-81c3-9446fa33a83c",
+      "name": "Mark as Contacted",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let assigned_rep = 'Unknown';\n\ntry {\n  assigned_rep = $('Assign Junior Rep').first().json.assigned_rep;\n} catch(e) {\n  try {\n    assigned_rep = $('Assign Senior Rep').first().json.assigned_rep;\n  } catch(e) {\n    assigned_rep = 'Unknown';\n  }\n}\n\nreturn [{\n  json: {\n    assigned_rep: assigned_rep,\n    url: $('Create Trello Task').first().json.url\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        -1024
+      ],
+      "id": "d8cfd9d1-dba4-47bb-8b2e-c7de1106480b",
+      "name": "Prepare Slack Data"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0ARF65AC9G",
+          "mode": "list",
+          "cachedResultName": "general"
+        },
+        "text": "=❌ Hubspot Error!\nLead: {{ $('Typeform Trigger').item.json['Please provide your full name.'] }}\nEmail: {{ $('Typeform Trigger').item.json['What is your business email address?'] }}\nError Message: {{ $json.message }}\nError Code: {{ $json.code }}\nTime: {{ $now }}\n\nPlease manually manually add the lead contact details!",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        1344,
+        -448
+      ],
+      "id": "166d8e81-0536-4089-823c-b3f123bf7985",
+      "name": "Hubspot Error Alert",
+      "webhookId": "fd9143f4-4280-449b-83d8-74cae13d63ef",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "V8WsnwUYhMJXUXLS",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0ARF65AC9G",
+          "mode": "list",
+          "cachedResultName": "general"
+        },
+        "text": "=❌ Gmail Error!\nLead: {{ $('Typeform Trigger').item.json['Please provide your full name.'] }}\nEmail: {{ $('Typeform Trigger').item.json['What is your business email address?'] }}\nError Message: {{ $json.message }}\nError Code: {{ $json.code }}\nTime: {{ $now }}\n\nPlease manually send a welcome email to this lead!",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2240,
+        -736
+      ],
+      "id": "7ee21280-1aa8-41b1-b1e7-93aea26a69fb",
+      "name": "Gmail Error Alert",
+      "webhookId": "7da7b793-1220-4f42-b89a-077440790e1c",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "V8WsnwUYhMJXUXLS",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0ARF65AC9G",
+          "mode": "list",
+          "cachedResultName": "general"
+        },
+        "text": "=❌ Gmail Error!\nLead: {{ $('Typeform Trigger').item.json['Please provide your full name.'] }}\nEmail: {{ $('Typeform Trigger').item.json['What is your business email address?'] }}\nError Message: {{ $json.message }}\nError Code: {{ $json.code }}\nTime: {{ $now }}\n\nPlease manually send a welcome email to this lead!",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2240,
+        -544
+      ],
+      "id": "d71037b2-9a52-4ea7-a73f-cb2d89f06ac3",
+      "name": "Gmail Error Alert1",
+      "webhookId": "265d05bb-fe2b-47bb-bb2e-e0f5e92725cd",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "V8WsnwUYhMJXUXLS",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0ARF65AC9G",
+          "mode": "list",
+          "cachedResultName": "general"
+        },
+        "text": "=❌ Trello Error!\nLead: {{ $('Typeform Trigger').item.json['Please provide your full name.'] }}\nEmail: {{ $('Typeform Trigger').item.json['What is your business email address?'] }}\nError Message: {{ $json.message }}\nError Code: {{ $json.code }}\nTime: {{ $now }}\n\nPlease check HubSpot and manually add this contact!",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2912,
+        -832
+      ],
+      "id": "eb235539-1225-428a-b748-6b84b8b92e71",
+      "name": "Trello Error Alert",
+      "webhookId": "a6a9376c-8c0c-44e8-9a28-f35451ce434d",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "V8WsnwUYhMJXUXLS",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Typeform Trigger": [
+      {
+        "json": {
+          "Please provide your full name.": "BTeck",
+          "What is your business email address?": "odabrown1@gmail.com",
+          "What is your company’s name?": "Odabrown",
+          "What is the size of your company?": "1-10 employees",
+          "Which CRM service are you interested in?": "Integration Services",
+          "Would you like to request a product demo?": true
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Typeform Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Email": {
+      "main": [
+        [
+          {
+            "node": "Email Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Valid?": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark as Invalid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Is Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Duplicate": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Save to Hubspot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Hubspot": {
+      "main": [
+        [
+          {
+            "node": "Route by Company Size",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Hubspot Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Company Size": {
+      "main": [
+        [
+          {
+            "node": "Assign Junior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assign Junior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assign Senior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assign Senior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assign Senior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assign Senior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assign Senior Rep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign Junior Rep": {
+      "main": [
+        [
+          {
+            "node": "Demo Requested?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign Senior Rep": {
+      "main": [
+        [
+          {
+            "node": "Demo Requested?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Demo Requested?": {
+      "main": [
+        [
+          {
+            "node": "Send Demo Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Demo Email": {
+      "main": [
+        [
+          {
+            "node": "Log to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Log to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail Error Alert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Trello Task": {
+      "main": [
+        [
+          {
+            "node": "Prepare Slack Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Trello Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Lead Alert": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Sheets": {
+      "main": [
+        [
+          {
+            "node": "Mark as Contacted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 days": {
+      "main": [
+        [
+          {
+            "node": "Check Lead Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Lead Status": {
+      "main": [
+        [
+          {
+            "node": "Still Unattended?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Still Unattended?": {
+      "main": [
+        [
+          {
+            "node": "Send Follow-up Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Today's Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Today's Leads": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as Contacted": {
+      "main": [
+        [
+          {
+            "node": "Create Trello Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Slack Data": {
+      "main": [
+        [
+          {
+            "node": "Slack Lead Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2351039c-356a-4169-b401-2739d9c1e881",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "25f83fd96b7b7d5b24483d42d5a7bb8930006152fd74fa0df29bb744c20ffd59"
+  },
+  "id": "DQVhkCm0uSnP7u8i",
+  "tags": []
+}
