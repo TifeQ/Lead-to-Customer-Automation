@@ -1216,6 +1216,262 @@
           "name": "Slack OAuth2 API"
         }
       }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "maxResults": 30,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        48
+      ],
+      "id": "71dbc0a8-ca15-4ed2-ba12-5d1a5e4f080b",
+      "name": "Watch for Replies",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IwTkbyxXKlvpkXIf",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const fromField = $json.From || '';\nconst emailMatch = fromField.match(/<(.+?)>/) || fromField.match(/([^\\s]+@[^\\s]+)/);\nconst email = emailMatch ? emailMatch[1] || emailMatch[0] : '';\n\nreturn { json: { ...($json), extractedEmail: email.trim() } };"
+      },
+      "id": "cdbd6f1b-50b7-4763-aa8f-05971fea06d3",
+      "name": "Extract Email from Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.extractedEmail }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        48
+      ],
+      "id": "d9acf920-0219-400e-b230-aae762c1adf9",
+      "name": "Find Lead by Email",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c78773f7-74f5-48a2-94ee-d78d9aec01dd",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        48
+      ],
+      "id": "61346df4-0319-4714-9e72-f4f9538d3a7b",
+      "name": "Is a Known Lead?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker_N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LiE_FswTQorZcWiILEKlqF9tjOHrYMZhkdYaa46e1CM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Responded",
+            "Email": "={{ $('Find Lead by Email').item.json.Email }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company ",
+              "displayName": "Company ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Enrichment",
+              "displayName": "Enrichment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Route",
+              "displayName": "Route",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Outcome",
+              "displayName": "Outcome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        48
+      ],
+      "id": "3380292b-7c3c-4485-ac25-ff305fad5fc2",
+      "name": "Mark as Responded",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DeqwvqBgS7QdV0jn",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
     }
   ],
   "pinData": {
@@ -1570,6 +1826,50 @@
           }
         ]
       ]
+    },
+    "Watch for Replies": {
+      "main": [
+        [
+          {
+            "node": "Extract Email from Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Email from Reply": {
+      "main": [
+        [
+          {
+            "node": "Find Lead by Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Lead by Email": {
+      "main": [
+        [
+          {
+            "node": "Is a Known Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is a Known Lead?": {
+      "main": [
+        [
+          {
+            "node": "Mark as Responded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1577,7 +1877,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "2351039c-356a-4169-b401-2739d9c1e881",
+  "versionId": "04d59290-2471-46a4-aff6-b15bfd92bc14",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "25f83fd96b7b7d5b24483d42d5a7bb8930006152fd74fa0df29bb744c20ffd59"
